@@ -4,31 +4,20 @@ version = "0.1.0"
 description = "Anonymous stress relief Telegram-based platform for students"
 readme = "README.md"
 requires-python = ">=3.11"
-dependencies = [
-    "aiogram>=3.20.0",
-    "fastapi>=0.115.12",
-    "httpx>=0.28.1",
-    "pydantic>=2.11.3",
+dynamic = ["dependencies"]
+
+[tool.poetry]
+packages = [
+    { include = "api", from = "src" },
+    { include = "bot", from = "src" }
 ]
 
-[dependency-groups]
-dev = [
-    "pre-commit>=4.2.0",
-    "pytest>=8.3.5",
-    "ruff>=0.11.5",
-]
+[tool.poetry.dependencies]
+aiogram = "3.20.0"
+fastapi = "0.115.12"
+httpx = "^0.28.1"
 
-[tool.ruff]
-src = ["bot"]
-output-format = "full"
-
-[tool.ruff.lint]
-ignore = ["E203", "E266", "E501", "C408", "B010", "F401", "C901", "B008"]
-select = ["B", "C", "E", "F", "W", "B9"]
-ignore-init-module-imports = true
-
-[tool.ruff.format]
-quote-style = "preserve"
-
-[tool.ruff.lint.isort]
-force-single-line = true
+[tool.poetry.group.dev.dependencies]
+pre-commit = "^4.2.0"
+flake8 = "^7.2.0"
+pytest = "^8.3.5"
