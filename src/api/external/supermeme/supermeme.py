@@ -1,5 +1,5 @@
 from httpx import AsyncClient, Timeout
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ValidationError
 from typing import List
 from bs4 import BeautifulSoup
 import json
@@ -65,7 +65,11 @@ class Supermeme:
                                          params={"searchQuery": text})
         response.raise_for_status()
 
-        response = _SearchQueryResponse.model_validate(response.json())
+        try:
+            response = _SearchQueryResponse.model_validate(response.json())
+        except ValidationError:
+            raise ValueError("No meme templates found (invalid json response)")
+
         if len(response.meme_templates) == 0:
             raise ValueError(f'No meme templates found for query "{text}"')
         image = response.meme_templates[0]
@@ -81,9 +85,17 @@ class Supermeme:
             raise ValueError("No captions found (__NEXT_DATA__ is absent)")
 
         next_data_json = json.loads(next_data.text)
+        if "props" not in next_data_json:
+            raise ValueError("No captions found (props is absent)")
+        if "pageProps" not in next_data_json:
+            raise ValueError("No captions found (pageProps is absent)")
 
-        page_props = _PageProps.model_validate(
-            next_data_json["props"]["pageProps"])
+        page_props = None
+        try:
+            page_props = _PageProps.model_validate(
+                next_data_json["props"]["pageProps"])
+        except ValidationError:
+            raise ValueError("No captions found (invalid json response)")
 
         return MemeTemplate(image_url=image.image_path,
                             captions=page_props.initial_captions)
