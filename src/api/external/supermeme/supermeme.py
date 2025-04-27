@@ -60,6 +60,13 @@ class Supermeme:
 
         Returns:
             MemeTemplate: Image with caption rectangles.
+
+        Raises:
+            httpx.HTTPStatusError
+            httpx.RequestError
+            httpx.TimeoutException
+            httpx.NetworkError
+            ValueError
         """
         response = await self.client.get("/api/search",
                                          params={"searchQuery": text})
