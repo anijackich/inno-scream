@@ -44,6 +44,7 @@ async def get_stats(
         .select_from(models.Scream)
         .where(models.Scream.user_id == user_id)
     )
+
     reactions = await session.execute(
         select(models.Reaction.reaction, func.count(models.Reaction.id))
         .join(models.Scream, models.Scream.id == models.Reaction.scream_id)
@@ -53,7 +54,10 @@ async def get_stats(
 
     return schemas.Stats(
         screams_count=screams_count.scalar() or 0,
-        reactions_count=dict(reactions.all())
+        reactions_count={
+            r.reaction: r.count
+            for r in reactions.all()
+        }
     )
 
 
