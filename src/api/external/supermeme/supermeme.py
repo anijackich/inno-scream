@@ -1,17 +1,9 @@
+import json
+from typing import List
+
+from bs4 import BeautifulSoup
 from httpx import AsyncClient, Timeout
 from pydantic import BaseModel, Field, ValidationError
-from typing import List
-from bs4 import BeautifulSoup
-import json
-
-
-class _MemeImage(BaseModel):
-    name: str
-    image_path: str
-
-
-class _SearchQueryResponse(BaseModel):
-    meme_templates: List[_MemeImage] = Field(alias='memeTemplates')
 
 
 class Caption(BaseModel):
@@ -20,20 +12,36 @@ class Caption(BaseModel):
     """
     x: int
     y: int
+    text: str
     width: int
     height: int
-
-
-class _PageProps(BaseModel):
-    initial_captions: List[Caption] = Field(alias='initialCaptions')
+    language: str
+    font_size: int = Field(alias='fontSize')
+    font_family: str | None = Field(alias='fontFamily')
+    rotate_angle: int = Field(alias='rotateAngle')
 
 
 class MemeTemplate(BaseModel):
-    """
-    Image with caption rectangles.
-    """
-    image_url: str
-    captions: List[Caption]
+    name: str
+    image_path: str
+    description: str
+    meme_text: str
+
+
+class MemeTemplateProps(BaseModel):
+    page_title: str = Field(alias='pageTitle')
+    image_src: str = Field(alias='imageSrc')
+    image_name: str = Field(alias='imageName')
+    image_description: str = Field(alias='imageDescription')
+    image_width: int = Field(alias='imageWidth')
+    image_height: int = Field(alias='imageHeight')
+    initial_captions: List[Caption] = Field(alias='initialCaptions')
+
+
+class _PageProps(BaseModel):
+    image_width: int = Field(alias='imageWidth')
+    image_height: int = Field(alias='imageHeight')
+    initial_captions: List[Caption] = Field(alias='initialCaptions')
 
 
 class Supermeme:
@@ -41,19 +49,20 @@ class Supermeme:
     Wrapper class for Supermeme API.
     """
 
-    def __init__(self, supermeme_url: str = 'https://supermeme.ai'):
+    def __init__(self, base_url: str = 'https://supermeme.ai', timeout: float = 30.0):
         """
         Initialize a Supermeme instance.
 
         Args:
-            supermeme_url (str): Base url of Supermeme.
+            base_url (str): Base url of Supermeme.
+            timeout (float): Timeout for requests to Supermeme.
         """
         self.client = AsyncClient(
-            base_url=supermeme_url,
-            timeout=Timeout(30.0),
+            base_url=base_url,
+            timeout=Timeout(timeout),
         )
 
-    async def _search_memes(self, query: str) -> List[_MemeImage]:
+    async def search_meme_templates(self, query: str) -> List[MemeTemplate]:
         response = await self.client.get(
             '/api/search',
             params={'searchQuery': query},
@@ -61,63 +70,33 @@ class Supermeme:
         response.raise_for_status()
 
         try:
-            response = _SearchQueryResponse.model_validate(response.json())
-        except ValidationError:
-            raise ValueError('No meme templates found (invalid json response)')
+            meme_templates = [
+                MemeTemplate.model_validate(template)
+                for template in response.json()['memeTemplates']
+            ]
+        except (json.JSONDecodeError, KeyError, ValidationError) as e:
+            raise ValueError('Invalid json response') from e
 
-        if len(response.meme_templates) == 0:
-            raise ValueError(f'No meme templates found for query "{query}"')
+        return meme_templates
 
-        return response.meme_templates
+    async def get_meme_template_props(self, meme: MemeTemplate) -> MemeTemplateProps:
+        response = await self.client.get(f'/meme/{meme.name}')
+        response.raise_for_status()
 
-    async def _get_meme_captions(self, meme: _MemeImage) -> List[Caption]:
-        page = await self.client.get(f'/meme/{meme.name}')
-        page.raise_for_status()
-
-        soup = BeautifulSoup(page.content, 'html.parser')
+        soup = BeautifulSoup(response.content, 'html.parser')
         next_data = soup.find(id='__NEXT_DATA__')
 
         if next_data is None:
-            raise ValueError('No captions found (__NEXT_DATA__ is absent)')
+            raise ValueError('No data found (__NEXT_DATA__ is absent)')
 
         next_data = json.loads(next_data.text)
 
-        if 'props' not in next_data:
-            raise ValueError('No captions found (props is absent)')
-
-        if 'pageProps' not in next_data['props']:
-            raise ValueError('No captions found (pageProps is absent)')
-
         try:
-            page_props = _PageProps.model_validate(
+            print(next_data['props']['pageProps'])
+            meme_template_props = MemeTemplateProps.model_validate(
                 next_data['props']['pageProps']
             )
-        except ValidationError:
-            raise ValueError('No captions found (invalid json response)')
+        except (KeyError, ValidationError) as e:
+            raise ValueError('Invalid __NEXT_DATA__ schema') from e
 
-        return page_props.initial_captions
-
-    async def get_meme_template(self, query: str) -> MemeTemplate:
-        """
-        Finds the most suitable template for given meme text.
-
-        Args:
-            query (str): Meme query.
-
-        Returns:
-            MemeTemplate: Image with caption rectangles.
-
-        Raises:
-            httpx.HTTPStatusError
-            httpx.RequestError
-            httpx.TimeoutException
-            httpx.NetworkError
-            ValueError
-        """
-        memes = await self._search_memes(query)
-        captions = await self._get_meme_captions(memes[0])
-
-        return MemeTemplate(
-            image_url=memes[0].image_path,
-            captions=captions,
-        )
+        return meme_template_props
