@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Any
 from pydantic import BaseModel
 from httpx import AsyncClient
 
@@ -10,9 +10,11 @@ class Dataset(BaseModel):
     Attributes:
         label: Name of the dataset
         data: Values of the dataset
+        backgroundColor: Background color of the dataset
     """
     label: str
     data: List[float]
+    backgroundColor: str | None = None
 
 
 class ChartData(BaseModel):
@@ -35,9 +37,11 @@ class Chart(BaseModel):
         type: Chart type ("line", "bar", ...).
             See https://www.chartjs.org/docs/latest/
         data: Chart Data
+        options: Chart options
     """
     type: str
     data: ChartData
+    options: dict[str, Any] | None = None
 
 
 class QuickChart:
