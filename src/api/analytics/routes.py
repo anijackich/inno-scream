@@ -5,6 +5,7 @@ from fastapi import APIRouter, Depends, Path, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from . import schemas, service
+from api.screams import Scream
 from api.database import get_async_session
 
 router = APIRouter(tags=['Analytics'], prefix='/analytics')
@@ -34,3 +35,13 @@ async def get_graph(
         content=await service.get_graph(session, user_id, period),
         media_type='image/png'
     )
+
+@router.get(
+    '/getMostVoted',
+    response_model=Scream | None
+)
+async def get_most_voted(
+        period: Literal['day', 'week', 'month', 'year'] = Query(..., title='Period'),
+        session: AsyncSession = Depends(get_async_session),
+):
+    return await service.get_most_voted(session, period)

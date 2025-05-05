@@ -7,6 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from . import schemas
 from api import models
+from api.screams import Scream, scream_orm2schema
 from api.external.quickchart import QuickChart, Chart, ChartData, Dataset
 
 WEEKDAYS = {
@@ -33,6 +34,37 @@ MONTHS = {
     11: 'Nov',
     12: 'Dec',
 }
+
+
+def get_period_limits(
+        period: Literal['day', 'week', 'month', 'year'],
+        today: datetime | None = None,
+) -> tuple[datetime, datetime]:
+    if not today:
+        today = (
+            datetime
+            .now()
+            .replace(hour=0, minute=0, second=0, microsecond=0)
+        )
+
+    match period:
+        case 'day':
+            start = today
+            end = today + timedelta(days=1) - timedelta(seconds=1)
+        case 'week':
+            start = today - timedelta(days=today.weekday())
+            end = start + timedelta(days=7) - timedelta(seconds=1)
+        case 'month':
+            start = today.replace(day=1)
+            days = monthrange(today.year, today.month)[1]
+            end = start + timedelta(days=days) - timedelta(seconds=1)
+        case 'year':
+            start = today.replace(month=1, day=1)
+            end = today.replace(month=12, day=31) + timedelta(days=1) - timedelta(seconds=1)
+        case _:
+            raise ValueError('Invalid period')
+
+    return start, end
 
 
 async def get_stats(
@@ -72,12 +104,11 @@ async def get_graph(
         .replace(hour=0, minute=0, second=0, microsecond=0)
     )
 
+    start, end = get_period_limits(period, today)
+
     match period:
         case 'week':
             extract_field = 'dow'
-
-            start = today - timedelta(days=today.weekday())
-            end = start + timedelta(days=6, hours=23, minutes=59, seconds=59)
 
             labels = list(WEEKDAYS.values())
             to_data = lambda d: [d.get(dow, 0) for dow in WEEKDAYS.keys()]
@@ -86,19 +117,13 @@ async def get_graph(
         case 'month':
             extract_field = 'day'
 
-            start = today.replace(day=1)
             days = monthrange(today.year, today.month)[1]
-            end = start + timedelta(days=days) - timedelta(seconds=1)
-
             labels = list(map(str, range(1, days + 1)))
             to_data = lambda d: [d.get(day, 0) for day in range(1, days + 1)]
 
             title = f'Screams for {today.strftime('%b %Y')}'
         case 'year':
             extract_field = 'month'
-
-            start = today.replace(month=1, day=1)
-            end = today.replace(month=12, day=31)
 
             labels = list(MONTHS.values())
             to_data = lambda d: [d.get(month, 0) for month in MONTHS.keys()]
@@ -166,3 +191,28 @@ async def get_graph(
     )
 
     return await QuickChart().chart(chart)
+
+
+async def get_most_voted(
+        session: AsyncSession,
+        period: Literal['day', 'week', 'month', 'year'],
+) -> Scream | None:
+    today = (
+        datetime
+        .now(tz=timezone(timedelta(hours=+3)))
+        .replace(hour=0, minute=0, second=0, microsecond=0)
+    )
+
+    start, end = get_period_limits(period, today)
+
+    result = (await session.execute(
+        select(models.Scream)
+        .join(models.Reaction, models.Scream.id == models.Reaction.scream_id)
+        .where(models.Scream.created_at >= start)
+        .where(models.Scream.created_at <= end)
+        .group_by(models.Scream.id)
+        .order_by(func.count(models.Reaction.id).desc())
+        .limit(1)
+    )).scalar()
+
+    return scream_orm2schema(result) if result else None
