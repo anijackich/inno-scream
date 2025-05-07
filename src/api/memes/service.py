@@ -102,7 +102,9 @@ async def generate_meme(
 
     supermeme = Supermeme()
     meme_templates = await supermeme.search_meme_templates(scream.text)
-    meme_template_props = await supermeme.get_meme_template_props(meme_templates[0])
+    meme_template_props = await supermeme.get_meme_template_props(
+        meme_templates[0]
+    )
 
     image = fetch_meme_image(meme_template_props)
     caption = meme_template_props.initial_captions[0]
@@ -112,7 +114,10 @@ async def generate_meme(
         xy=(caption.x, caption.y),
         size=(caption.width, caption.height),
         text=scream.text,
-        font=ImageFont.truetype(settings.memes.captions_font, caption.font_size),
+        font=ImageFont.truetype(
+            settings.memes.captions_font,
+            caption.font_size
+        ),
     )
 
     return image2bytes(image)

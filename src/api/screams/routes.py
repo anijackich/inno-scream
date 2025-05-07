@@ -12,9 +12,9 @@ router = APIRouter(tags=['Screams'], prefix='/screams')
     response_model=list[schemas.Scream],
 )
 async def get_screams(
-        page: int = Query(..., title='Page'),
-        limit: int = Query(..., title='Limit'),
-        session: AsyncSession = Depends(get_async_session),
+    page: int = Query(..., title='Page'),
+    limit: int = Query(..., title='Limit'),
+    session: AsyncSession = Depends(get_async_session),
 ):
     return await service.get_screams(session, page, limit)
 
@@ -24,8 +24,8 @@ async def get_screams(
     response_model=schemas.Scream,
 )
 async def create_scream(
-        scream: schemas.ScreamCreate,
-        session: AsyncSession = Depends(get_async_session),
+    scream: schemas.ScreamCreate,
+    session: AsyncSession = Depends(get_async_session),
 ):
     return await service.create_scream(session, scream.user_id, scream.text)
 
@@ -35,16 +35,16 @@ async def create_scream(
     response_model=schemas.Scream,
 )
 async def get_scream(
-        scream_id: int = Path(..., title='Scream ID'),
-        session: AsyncSession = Depends(get_async_session),
+    scream_id: int = Path(..., title='Scream ID'),
+    session: AsyncSession = Depends(get_async_session),
 ):
     return await service.get_scream(session, scream_id)
 
 
 @router.delete('/{scream_id}')
 async def delete_scream(
-        scream_id: int = Path(..., title='Scream ID'),
-        session: AsyncSession = Depends(get_async_session),
+    scream_id: int = Path(..., title='Scream ID'),
+    session: AsyncSession = Depends(get_async_session),
 ):
     await service.delete_scream(session, scream_id)
 
@@ -54,8 +54,8 @@ async def delete_scream(
     response_model=schemas.Scream,
 )
 async def react_on_scream(
-        reaction: schemas.ReactionCreate,
-        session: AsyncSession = Depends(get_async_session),
+    reaction: schemas.ReactionCreate,
+    session: AsyncSession = Depends(get_async_session),
 ):
     return await service.react_on_scream(
         session,

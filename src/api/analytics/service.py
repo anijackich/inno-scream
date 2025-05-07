@@ -60,7 +60,10 @@ def get_period_limits(
             end = start + timedelta(days=days) - timedelta(seconds=1)
         case 'year':
             start = today.replace(month=1, day=1)
-            end = today.replace(month=12, day=31) + timedelta(days=1) - timedelta(seconds=1)
+            end = today.replace(
+                month=12, day=31,
+                hour=23, minute=59, second=59
+            )
         case _:
             raise ValueError('Invalid period')
 
@@ -111,22 +114,29 @@ async def get_graph(
             extract_field = 'dow'
 
             labels = list(WEEKDAYS.values())
-            to_data = lambda d: [d.get(dow, 0) for dow in WEEKDAYS.keys()]
+            to_data = lambda d: [  # noqa: E731
+                d.get(dow, 0) for dow in WEEKDAYS.keys()
+            ]
 
-            title = f"Screams from {start.strftime('%b %d')} to {end.strftime('%b %d')}"
+            title = (f"Screams from {start.strftime('%b %d')}"
+                     f" to {end.strftime('%b %d')}")
         case 'month':
             extract_field = 'day'
 
             days = monthrange(today.year, today.month)[1]
             labels = list(map(str, range(1, days + 1)))
-            to_data = lambda d: [d.get(day, 0) for day in range(1, days + 1)]
+            to_data = lambda d: [  # noqa: E731
+                d.get(day, 0) for day in range(1, days + 1)
+            ]
 
             title = f"Screams for {today.strftime('%b %Y')}"
         case 'year':
             extract_field = 'month'
 
             labels = list(MONTHS.values())
-            to_data = lambda d: [d.get(month, 0) for month in MONTHS.keys()]
+            to_data = lambda d: [  # noqa: E731
+                d.get(month, 0) for month in MONTHS.keys()
+            ]
 
             title = f"Screams for {start.strftime('%Y')} year"
         case _:
