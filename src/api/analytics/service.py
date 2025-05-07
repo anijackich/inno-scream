@@ -113,7 +113,7 @@ async def get_graph(
             labels = list(WEEKDAYS.values())
             to_data = lambda d: [d.get(dow, 0) for dow in WEEKDAYS.keys()]
 
-            title = f'Screams from {start.strftime('%b %d')} to {end.strftime('%b %d')}'
+            title = f"Screams from {start.strftime('%b %d')} to {end.strftime('%b %d')}"
         case 'month':
             extract_field = 'day'
 
@@ -121,14 +121,14 @@ async def get_graph(
             labels = list(map(str, range(1, days + 1)))
             to_data = lambda d: [d.get(day, 0) for day in range(1, days + 1)]
 
-            title = f'Screams for {today.strftime('%b %Y')}'
+            title = f"Screams for {today.strftime('%b %Y')}"
         case 'year':
             extract_field = 'month'
 
             labels = list(MONTHS.values())
             to_data = lambda d: [d.get(month, 0) for month in MONTHS.keys()]
 
-            title = f'Screams for {start.strftime('%Y')} year'
+            title = f"Screams for {start.strftime('%Y')} year"
         case _:
             raise ValueError('Invalid period')
 
