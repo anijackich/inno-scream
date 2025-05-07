@@ -16,8 +16,8 @@ router = APIRouter(tags=['Analytics'], prefix='/analytics')
     response_model=schemas.Stats,
 )
 async def get_stats(
-        user_id: int = Path(..., title='User ID'),
-        session: AsyncSession = Depends(get_async_session),
+    user_id: int = Path(..., title='User ID'),
+    session: AsyncSession = Depends(get_async_session),
 ):
     return await service.get_stats(session, user_id)
 
@@ -27,21 +27,24 @@ async def get_stats(
     response_class=Response,
 )
 async def get_graph(
-        user_id: int = Path(..., title='User ID'),
-        period: Literal['week', 'month', 'year'] = Query(..., title='Period'),
-        session: AsyncSession = Depends(get_async_session),
+    user_id: int = Path(..., title='User ID'),
+    period: Literal['week', 'month', 'year'] = Query(..., title='Period'),
+    session: AsyncSession = Depends(get_async_session),
 ):
     return Response(
         content=await service.get_graph(session, user_id, period),
         media_type='image/png'
     )
 
+
 @router.get(
     '/getMostVoted',
     response_model=Scream | None
 )
 async def get_most_voted(
-        period: Literal['day', 'week', 'month', 'year'] = Query(..., title='Period'),
-        session: AsyncSession = Depends(get_async_session),
+    period: Literal[
+        'day', 'week', 'month', 'year'
+    ] = Query(..., title='Period'),
+    session: AsyncSession = Depends(get_async_session),
 ):
     return await service.get_most_voted(session, period)

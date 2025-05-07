@@ -50,7 +50,10 @@ async def start(message: Message) -> None:
 @dp.message(Command('exit'))
 async def exit_bot(message: Message) -> None:
     subscribers.discard(message.chat.id)
-    await message.reply('👋 You\'ve unsubscribed from updates. Use /start to join again anytime.')
+    await message.reply(
+        '👋 You\'ve unsubscribed from updates. '
+        'Use /start to join again anytime.'
+    )
 
 
 def build_reactions_keyboard(scream: Scream) -> InlineKeyboardMarkup:
@@ -100,7 +103,11 @@ async def create_scream(message: Message) -> None:
                 f'\n\n`{scream.scream_id}`'
                 if sub in settings.bot.admins else ''
             ),
-            reply_to_message_id=message.message_id if sub == message.from_user.id else None,
+            reply_to_message_id=(
+                message.message_id
+                if sub == message.from_user.id
+                else None
+            ),
             reply_markup=kb
         )
 
@@ -117,7 +124,9 @@ async def create_reaction(
     )
     extend_reactions_with_defaults(scream)
 
-    await callback.message.edit_reply_markup(reply_markup=build_reactions_keyboard(scream))
+    await callback.message.edit_reply_markup(
+        reply_markup=build_reactions_keyboard(scream)
+    )
 
 
 @dp.message(Command('stats'))
@@ -158,7 +167,9 @@ async def delete(message: Message) -> None:
 async def send_daily_top_scream():
     while True:
         now = datetime.now()
-        nxt = now.replace(hour=0, minute=0, second=0, microsecond=0) + timedelta(days=1)
+        nxt = now.replace(
+            hour=0, minute=0, second=0, microsecond=0
+        ) + timedelta(days=1)
         await asyncio.sleep((nxt - now).total_seconds())
 
         scream = await innoscream.get_most_voted_scream('day')

@@ -49,7 +49,11 @@ class Supermeme:
     Wrapper class for Supermeme API.
     """
 
-    def __init__(self, base_url: str = 'https://supermeme.ai', timeout: float = 30.0):
+    def __init__(
+        self,
+        base_url: str = 'https://supermeme.ai',
+        timeout: float = 30.0,
+    ):
         """
         Initialize a Supermeme instance.
 
@@ -79,7 +83,10 @@ class Supermeme:
 
         return meme_templates
 
-    async def get_meme_template_props(self, meme: MemeTemplate) -> MemeTemplateProps:
+    async def get_meme_template_props(
+        self,
+        meme: MemeTemplate,
+    ) -> MemeTemplateProps:
         response = await self.client.get(f'/meme/{meme.name}')
         response.raise_for_status()
 

@@ -30,7 +30,12 @@ class InnoScreamAPI:
         res = await self.client.delete(f'/screams/{scream_id}')
         res.raise_for_status()
 
-    async def react_on_scream(self, scream_id: int, user_id: int, reaction: str) -> Scream:
+    async def react_on_scream(
+        self,
+        scream_id: int,
+        user_id: int,
+        reaction: str,
+    ) -> Scream:
         res = await self.client.post(
             f'/screams/{scream_id}/react',
             json={
@@ -49,7 +54,11 @@ class InnoScreamAPI:
 
         return Stats.model_validate(res.json())
 
-    async def get_graph(self, user_id: int, period: Literal['week', 'month', 'year']) -> bytes:
+    async def get_graph(
+        self,
+        user_id: int,
+        period: Literal['week', 'month', 'year']
+    ) -> bytes:
         res = await self.client.get(
             f'/analytics/{user_id}/graph',
             params={'period': period}
@@ -58,7 +67,10 @@ class InnoScreamAPI:
 
         return res.content
 
-    async def get_most_voted_scream(self, period: Literal['day', 'week', 'month', 'year']) -> Scream | None:
+    async def get_most_voted_scream(
+        self,
+        period: Literal['day', 'week', 'month', 'year']
+    ) -> Scream | None:
         res = await self.client.get(
             '/analytics/getMostVoted',
             params={'period': period}
