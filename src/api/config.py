@@ -16,11 +16,18 @@ class Database(BaseSettings):
     model_config = SettingsConfigDict(env_prefix='database_')
 
 
+class Memes(BaseSettings):
+    captions_font: str = Field(...)
+
+    model_config = SettingsConfigDict(env_prefix='meme_')
+
+
 class Settings(BaseSettings):
     host: str = Field('127.0.0.1')
     port: int = Field(8000)
     app_meta: AppMeta = AppMeta()
     database: Database = Database()
+    memes: Memes = Memes()
 
 
 settings = Settings()
