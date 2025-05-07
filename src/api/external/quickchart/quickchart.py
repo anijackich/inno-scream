@@ -12,6 +12,7 @@ class Dataset(BaseModel):
         data: Values of the dataset
         backgroundColor: Background color of the dataset
     """
+
     label: str
     data: List[float]
     backgroundColor: str | None = None
@@ -25,6 +26,7 @@ class ChartData(BaseModel):
         labels: List of labels (names for points on x-axis)
         datasets: Datasets
     """
+
     labels: List[str]
     datasets: List[Dataset]
 
@@ -39,6 +41,7 @@ class Chart(BaseModel):
         data: Chart Data
         options: Chart options
     """
+
     type: str
     data: ChartData
     options: dict[str, Any] | None = None
@@ -67,7 +70,7 @@ class QuickChart:
         ```
     """
 
-    def __init__(self, quickchart_url: str = "https://quickchart.io"):
+    def __init__(self, quickchart_url: str = 'https://quickchart.io'):
         """
         Initialize a QuickChart instance.
 
@@ -92,9 +95,12 @@ class QuickChart:
             httpx.TimeoutException
             https.NetworkError
         """
-        response = await self.client.post("/chart", json={
-            "chart": chart.model_dump_json(),
-            "backgroundColor": "white"
-        })
+        response = await self.client.post(
+            '/chart',
+            json={
+                'chart': chart.model_dump_json(),
+                'backgroundColor': 'white',
+            },
+        )
         response.raise_for_status()
         return response.content

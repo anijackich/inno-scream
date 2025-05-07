@@ -10,6 +10,7 @@ class Caption(BaseModel):
     """
     Rectangle representing a place for caption in meme.
     """
+
     x: int
     y: int
     text: str

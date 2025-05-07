@@ -5,7 +5,7 @@ from sqlalchemy.orm import declarative_base
 from sqlalchemy.ext.asyncio import (
     create_async_engine,
     async_sessionmaker,
-    AsyncSession
+    AsyncSession,
 )
 
 from api.config import settings
@@ -17,7 +17,7 @@ engine = create_async_engine(settings.database.url, poolclass=NullPool)
 AsyncSessionLocal = async_sessionmaker(
     engine,
     class_=AsyncSession,
-    expire_on_commit=False
+    expire_on_commit=False,
 )
 
 

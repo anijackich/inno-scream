@@ -16,7 +16,7 @@ async def startup() -> None:
 
 app = FastAPI(
     **settings.app_meta.model_dump(),
-    on_startup=[startup]
+    on_startup=[startup],
 )
 
 register_exception_handler(app)
