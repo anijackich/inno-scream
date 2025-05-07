@@ -4,6 +4,7 @@ import httpx
 from PIL import Image, ImageDraw, ImageFont
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from api.config import settings
 from api.screams import get_scream
 from api.external.supermeme import Supermeme, MemeTemplateProps
 
@@ -111,7 +112,7 @@ async def generate_meme(
         xy=(caption.x, caption.y),
         size=(caption.width, caption.height),
         text=scream.text,
-        font=ImageFont.truetype('impact.ttf', caption.font_size),
+        font=ImageFont.truetype(settings.memes.captions_font, caption.font_size),
     )
 
     return image2bytes(image)
