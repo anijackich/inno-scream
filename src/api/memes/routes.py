@@ -18,5 +18,5 @@ async def generate_meme(
 ):
     return Response(
         content=await service.generate_meme(session, scream_id),
-        media_type='image/png'
+        media_type='image/png',
     )

@@ -15,9 +15,9 @@ def get_text_sizes(text: str, font: ImageFont) -> tuple[float, float]:
 
 
 def split_text_to_lines(
-        width: float,
-        text: str,
-        font: ImageFont,
+    width: float,
+    text: str,
+    font: ImageFont,
 ) -> list[str]:
     break_width = get_text_sizes(' ', font)[0]
 
@@ -47,12 +47,12 @@ def split_text_to_lines(
 
 
 def insert_multiline_text_on_image(
-        image: Image,
-        xy: tuple[float, float],
-        size: tuple[float, float],
-        lines: list[str],
-        line_spacing: float,
-        font: ImageFont,
+    image: Image,
+    xy: tuple[float, float],
+    size: tuple[float, float],
+    lines: list[str],
+    line_spacing: float,
+    font: ImageFont,
 ) -> None:
     line_height = get_text_sizes('A', font)[1]
 
@@ -66,11 +66,11 @@ def insert_multiline_text_on_image(
 
 
 def insert_text_on_image(
-        image: Image,
-        xy: tuple[float, float],
-        size: tuple[float, float],
-        text: str,
-        font: ImageFont,
+    image: Image,
+    xy: tuple[float, float],
+    size: tuple[float, float],
+    text: str,
+    font: ImageFont,
 ):
     lines = split_text_to_lines(size[0], text, font)
     insert_multiline_text_on_image(image, xy, size, lines, 5, font)
@@ -95,8 +95,8 @@ def image2bytes(image: Image) -> bytes:
 
 
 async def generate_meme(
-        session: AsyncSession,
-        scream_id: int,
+    session: AsyncSession,
+    scream_id: int,
 ) -> bytes:
     scream = await get_scream(session, scream_id)
 
@@ -116,7 +116,7 @@ async def generate_meme(
         text=scream.text,
         font=ImageFont.truetype(
             settings.memes.captions_font,
-            caption.font_size
+            caption.font_size,
         ),
     )
 

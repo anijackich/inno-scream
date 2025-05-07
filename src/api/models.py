@@ -13,8 +13,7 @@ class Scream(Base):
     user_id: Mapped[int] = mapped_column(Integer)
     text: Mapped[str] = mapped_column(String)
     created_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True),
-        server_default=func.now()
+        DateTime(timezone=True), server_default=func.now()
     )
 
     reactions: Mapped[list['Reaction']] = relationship(
@@ -34,10 +33,10 @@ class Reaction(Base):
     reaction: Mapped[str] = mapped_column(String)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
-        server_default=func.now()
+        server_default=func.now(),
     )
 
     scream: Mapped['Scream'] = relationship(
         'Scream',
-        back_populates='reactions'
+        back_populates='reactions',
     )
