@@ -16,20 +16,9 @@ jobs:
 
       # If you wanted to use multiple Python versions, you'd have specify a matrix in the job and
       # reference the matrixe python version here.
-      - uses: actions/setup-python@v2
+      - uses: actions/setup-python@v4
         with:
-          python-version: 3.9
-
-      # Cache the installation of Poetry itself, e.g. the next step. This prevents the workflow
-      # from installing Poetry every time, which can be slow. Note the use of the Poetry version
-      # number in the cache key, and the "-0" suffix: this allows you to invalidate the cache
-      # manually if/when you want to upgrade Poetry, or if something goes wrong. This could be
-      # mildly cleaner by using an environment variable, but I don't really care.
-      - name: cache poetry install
-        uses: actions/cache@v2
-        with:
-          path: ~/.local
-          key: poetry-1.1.12-0
+          python-version: 3.11
 
       # Install Poetry. You could do this manually, or there are several actions that do this.
       # `snok/install-poetry` seems to be minimal yet complete, and really just calls out to
