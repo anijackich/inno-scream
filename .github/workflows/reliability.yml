@@ -25,15 +25,11 @@ jobs:
           pip install poetry
           poetry install
           poetry add --dev pytest pytest-cov
-      - name: Run tests with coverage
-        run: |
-          poetry run pytest tests/ --cov=app --cov-report=term-missing
       - run: poetry install --no-interaction
 
       # And finally run tests. I'm using pytest and all my pytest config is in my `pyproject.toml`
       # so this line is super-simple. But it could be as complex as you need.
-      - run: poetry run pytest --cov=src --cov-report=term-missing tests/
-
-      
-#      - name: Run mutations:
-#        run: poetry run mutmut run --paths-to-mutate ./taskManager/ --runner="pytest tests/
+      - name: Run tests with coverage 
+        run: poetry run pytest --cov=src --cov-report=term-missing tests/
+      - name: Run mutations
+        run:  poetry run mutmut run --paths-to-mutate=src/bot
