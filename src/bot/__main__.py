@@ -1,3 +1,10 @@
+"""
+Anonymous Scream Bot.
+
+Allows users to send anonymous messages ("screams"), react to them, view stats, and receive daily top screams.
+Admins can delete screams. Interaction is via commands and inline buttons.
+"""
+
 import sys
 import logging
 import asyncio
@@ -32,12 +39,15 @@ innoscream = InnoScreamAPI(base_url=settings.innoscream.base_url)
 
 
 class ReactionsCallbackFactory(CallbackData, prefix='reactions'):
+    """Factory for building and parsing reaction callback data in inline keyboards."""
+
     scream_id: int
     reaction: str
 
 
 @dp.message(CommandStart())
 async def start(message: Message) -> None:
+    """Handle /start command. Adds the user to the subscriber list and displays usage help."""
     subscribers.add(message.from_user.id)
     await message.reply(
         '👋 Welcome to the Anonymous Scream Bot!\n'
@@ -50,6 +60,7 @@ async def start(message: Message) -> None:
 
 @dp.message(Command('exit'))
 async def exit_bot(message: Message) -> None:
+    """Handle /exit command. Removes the user from the subscriber list."""
     subscribers.discard(message.chat.id)
     await message.reply(
         "👋 You've unsubscribed from updates. "
@@ -58,6 +69,15 @@ async def exit_bot(message: Message) -> None:
 
 
 def build_reactions_keyboard(scream: Scream) -> InlineKeyboardMarkup:
+    """
+    Construct an inline keyboard with reaction buttons for a given scream.
+
+    Args:
+        scream (Scream): The scream object containing reaction data.
+
+    Returns:
+        InlineKeyboardMarkup: The keyboard markup.
+    """
     kb = InlineKeyboardBuilder()
 
     kb.row(
@@ -78,7 +98,17 @@ def build_reactions_keyboard(scream: Scream) -> InlineKeyboardMarkup:
 
 
 def extend_reactions_with_defaults(scream: Scream) -> Scream:
+    """
+    Ensure all expected reactions exist in the scream, initializing with 0 if missing.
+
+    Args:
+        scream (Scream): The scream to normalize.
+
+    Returns:
+        Scream: The updated scream with default reactions.
+    """
     for r in settings.bot.reactions:
+
         scream.reactions[r] = scream.reactions.get(r, 0)
 
     return scream
@@ -86,6 +116,7 @@ def extend_reactions_with_defaults(scream: Scream) -> Scream:
 
 @dp.message(Command('scream'))
 async def create_scream(message: Message) -> None:
+    """Handle /scream command. Posts an anonymous message and sends it to all subscribers."""
     subscribers.add(message.from_user.id)
 
     text = message.text.removeprefix('/scream').strip()
@@ -119,6 +150,7 @@ async def create_reaction(
     callback: CallbackQuery,
     callback_data: ReactionsCallbackFactory,
 ) -> None:
+    """Handle reaction button press. Updates reaction count and refreshes the inline keyboard."""
     scream = await innoscream.react_on_scream(
         callback_data.scream_id,
         callback.from_user.id,
@@ -133,6 +165,13 @@ async def create_reaction(
 
 @dp.message(Command('stats'))
 async def get_stats(message: Message) -> None:
+    """Handle /stats command.
+
+    Sends the user a summary of their scream statistics, including a reaction graph.
+
+    Args:
+        message (Message): Incoming message object from the user.
+    """
     stats = await innoscream.get_stats(message.from_user.id)
     graph = await innoscream.get_graph(message.from_user.id, 'week')
 
@@ -157,6 +196,13 @@ async def get_stats(message: Message) -> None:
 
 @dp.message(Command('delete'), F.from_user.id.in_(settings.bot.admins))
 async def delete(message: Message) -> None:
+    """Handle /delete command.
+
+    Deletes a scream with the given ID. Only accessible to admins.
+
+    Args:
+        message (Message): Incoming message object containing the scream ID.
+    """
     scream_id = message.text.removeprefix('/delete').strip()
     if not scream_id.isdigit():
         await message.reply('Usage: /delete [scream_id]')
@@ -168,6 +214,10 @@ async def delete(message: Message) -> None:
 
 
 async def send_daily_top_scream():
+    """Send the top voted scream of the day to all subscribers.
+
+    This function runs in a background loop and triggers once daily at midnight.
+    """
     while True:
         now = datetime.now()
         nxt = now.replace(
@@ -190,6 +240,10 @@ async def send_daily_top_scream():
 
 
 async def main() -> None:
+    """Start the bot.
+
+    Starts the background task for daily top scream and begins polling.
+    """
     asyncio.create_task(send_daily_top_scream())
     await dp.start_polling(bot)
 
