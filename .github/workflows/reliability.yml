@@ -21,10 +21,10 @@ jobs:
           python-version: '3.11'
 
       - name: Install dependencies
-        run: |
-          pip install poetry
-          poetry install --no-interaction
-
+#        run: |
+#          pip install poetry
+#          poetry install --no-interaction
+        uses: snok/install-poetry@v1
       # And finally run tests. I'm using pytest and all my pytest config is in my `pyproject.toml`
       # so this line is super-simple. But it could be as complex as you need.
       - name: Run tests with coverage 
