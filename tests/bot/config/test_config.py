@@ -25,6 +25,26 @@ def test_telegram_bot_config(mock_env_vars):
     assert bot_config.reactions == ['👍', '👎', '❤️']
 
 
+def test_telegram_bot_config_empty_admins():
+    with patch.dict(os.environ, {
+        'TELEGRAM_BOT_TOKEN': 'test_token',
+        'ADMINS': '[]',
+        'REACTIONS': '["👍", "👎", "❤️"]',
+    }):
+        bot_config = TelegramBot()
+        assert bot_config.admins == []
+
+
+def test_telegram_bot_config_empty_reactions():
+    with patch.dict(os.environ, {
+        'TELEGRAM_BOT_TOKEN': 'test_token',
+        'ADMINS': '[1, 2, 3]',
+        'REACTIONS': '[]',
+    }):
+        bot_config = TelegramBot()
+        assert bot_config.reactions == []
+
+
 def test_innoscream_config(mock_env_vars):
     innoscream_config = InnoScream()
 
