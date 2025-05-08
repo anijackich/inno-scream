@@ -1,3 +1,5 @@
+"""Utility functions for meme generation."""
+
 from io import BytesIO
 
 import httpx
@@ -10,6 +12,16 @@ from api.external.supermeme import Supermeme, MemeTemplateProps
 
 
 def get_text_sizes(text: str, font: ImageFont) -> tuple[float, float]:
+    """
+    Get text width and height with specified font.
+
+    Args:
+        text (str): Text
+        font: (ImageFont): Font
+
+    Returns:
+        Width and height as tuple
+    """
     left, top, right, bottom = font.getbbox(text)
     return right - left, bottom - top
 
@@ -19,6 +31,17 @@ def split_text_to_lines(
     text: str,
     font: ImageFont,
 ) -> list[str]:
+    """
+    Split text into lines limited by specified width.
+
+    Args:
+        width (float): Width limit
+        text (str): Text
+        font (ImageFont): Font
+
+    Returns:
+        List of lines
+    """
     break_width = get_text_sizes(' ', font)[0]
 
     lines = []
@@ -54,6 +77,17 @@ def insert_multiline_text_on_image(
     line_spacing: float,
     font: ImageFont,
 ) -> None:
+    """
+    Draws array of text lines on specified image.
+
+    Args:
+        image (Image): Image to draw on
+        xy (tuple[float, float]): Text box position
+        size (tuple[float, float]): Text box width and height
+        lines (list[str]): Array of text lines
+        line_spacing (float): Space between lines
+        font (ImageFont): Font
+    """
     line_height = get_text_sizes('A', font)[1]
 
     draw = ImageDraw.Draw(image)
@@ -72,12 +106,31 @@ def insert_text_on_image(
     text: str,
     font: ImageFont,
 ):
+    """
+    Insert text on PIL image.
+
+    Args:
+        image (Image): Image to insert text on
+        xy (tuple[float, float]): Text box position
+        size (tuple[float, float]): Text box width and height
+        text (str): Text to insert
+        font (ImageFont): Text font
+    """
     lines = split_text_to_lines(size[0], text, font)
     insert_multiline_text_on_image(image, xy, size, lines, 5, font)
     return image
 
 
 def fetch_meme_image(meme: MemeTemplateProps) -> Image:
+    """
+    Fetch meme image from MemeTemplateProps.
+
+    Args:
+        meme (MemeTemplateProps): Meme props
+
+    Returns:
+        Meme as PIL image
+    """
     response = httpx.get(meme.image_src)
     response.raise_for_status()
 
@@ -88,9 +141,17 @@ def fetch_meme_image(meme: MemeTemplateProps) -> Image:
 
 
 def image2bytes(image: Image) -> bytes:
+    """
+    Convert PIL Image to bytes.
+
+    Args:
+        image (Image): PIL image
+
+    Returns:
+        Image as bytes
+    """
     img = BytesIO()
     image.save(img, format=image.format or 'PNG')
-
     return img.getvalue()
 
 
@@ -98,6 +159,16 @@ async def generate_meme(
     session: AsyncSession,
     scream_id: int,
 ) -> bytes:
+    """
+    Generate meme from scream.
+
+    Args:
+        session (AsyncSession): Database session
+        scream_id (int): Scream ID
+
+    Returns:
+        Meme image as bytes
+    """
     scream = await get_scream(session, scream_id)
 
     supermeme = Supermeme()
