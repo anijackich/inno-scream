@@ -1,3 +1,4 @@
+import sys
 import pytest
 import asyncio
 from pathlib import Path
@@ -8,6 +9,8 @@ from sqlalchemy.orm import sessionmaker
 # Load test environment variables
 env_path = Path(__file__).parent / '.env.test'
 load_dotenv(dotenv_path=env_path)
+
+sys.path.append('src')
 
 from src.api.database import Base  # noqa: E402
 from src.api.models import Scream, Reaction  # noqa: E402
