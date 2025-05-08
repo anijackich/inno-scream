@@ -45,7 +45,7 @@
 ![test](/imgs/bottest.jpg)
 
 - **SQL Query Performance (EXPLAIN ANALYZE, SQLite)**
-  - **Result:** 🟢 Passed / 🔴 Failed
+  - **Result:** 🟢 Passed 
   - **Details:**  
     - Max query execution time: **45 ms**
     - All queries are optimized and return in under 50 ms.
@@ -60,14 +60,14 @@
     - Bandit scan returned **no critical vulnerabilities**.
 
 - **Data Anonymity: user_id Hashing**
-  - **Result:** 🟢 Passed
+  - **Result:** 🔴 Failed
   - **Details:**  
-    - user_ids are securely hashed, confirmed by Bandit and manual audit.
+    - user_ids are not securely hashed.
 
 ---
 
 ## Summary
 
-- **Overall Status:** 🟢 All requirements are met, except Mutation Testing
+- **Overall Status:** 🟢 All requirements are met, except Mutation Testing and Data Anonymity.
 - **Comments & Recommendations:**  
-While the majority of quality requirements are fully met, the mutation testing threshold has not yet reached the target of 80% survival rate. To improve mutation testing results, we will review existing tests and add additional cases that cover edge conditions and potential failure scenarios. Focusing on testing branches, exception handling, and rarely used code paths will help catch more potential mutations, bringing the mutation testing score up to the required standard.
+While the majority of quality requirements are fully met, the mutation testing threshold has not yet reached the target of 80% survival rate. To improve mutation testing results, we will review existing tests and add additional cases that cover edge conditions and potential failure scenarios. Focusing on testing branches, exception handling, and rarely used code paths will help catch more potential mutations, bringing the mutation testing score up to the required standard. Also data anonymity for user_id hashing is currently not enforced. We will implement secure hashing of user identifiers in the future.
