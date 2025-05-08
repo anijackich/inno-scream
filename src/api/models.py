@@ -8,6 +8,7 @@ from api.database import Base
 
 class Scream(Base):
     __tablename__ = 'screams'
+    __table_args__ = {'extend_existing': True}
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     user_id: Mapped[int] = mapped_column(Integer)
@@ -24,6 +25,7 @@ class Scream(Base):
 
 class Reaction(Base):
     __tablename__ = 'reactions'
+    __table_args__ = {'extend_existing': True}
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     user_id: Mapped[int] = mapped_column(Integer)

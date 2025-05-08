@@ -67,12 +67,13 @@ class Supermeme:
             '/api/search',
             params={'searchQuery': query},
         )
-        response.raise_for_status()
+        await response.raise_for_status()
 
         try:
+            response_data = await response.json()
             meme_templates = [
                 MemeTemplate.model_validate(template)
-                for template in response.json()['memeTemplates']
+                for template in response_data['memeTemplates']
             ]
         except (json.JSONDecodeError, KeyError, ValidationError) as e:
             raise ValueError('Invalid json response') from e
@@ -81,7 +82,7 @@ class Supermeme:
 
     async def get_meme_template_props(self, meme: MemeTemplate) -> MemeTemplateProps:
         response = await self.client.get(f'/meme/{meme.name}')
-        response.raise_for_status()
+        await response.raise_for_status()
 
         soup = BeautifulSoup(response.content, 'html.parser')
         next_data = soup.find(id='__NEXT_DATA__')
@@ -92,7 +93,7 @@ class Supermeme:
         next_data = json.loads(next_data.text)
 
         try:
-            print(next_data['props']['pageProps'])
+            
             meme_template_props = MemeTemplateProps.model_validate(
                 next_data['props']['pageProps']
             )
