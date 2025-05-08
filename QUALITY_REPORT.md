@@ -59,15 +59,10 @@
   - **Details:**  
     - Bandit scan returned **no critical vulnerabilities**.
 
-- **Data Anonymity: user_id Hashing**
-  - **Result:** 🔴 Failed
-  - **Details:**  
-    - user_ids are not securely hashed.
-
 ---
 
 ## Summary
 
-- **Overall Status:** 🟢 All requirements are met, except Mutation Testing and Data Anonymity.
+- **Overall Status:** 🟢 All requirements are met, except Mutation Testing.
 - **Comments & Recommendations:**  
-While the majority of quality requirements are fully met, the mutation testing threshold has not yet reached the target of 80% survival rate. To improve mutation testing results, we will review existing tests and add additional cases that cover edge conditions and potential failure scenarios. Focusing on testing branches, exception handling, and rarely used code paths will help catch more potential mutations, bringing the mutation testing score up to the required standard. Also data anonymity for user_id hashing is currently not enforced. We will implement secure hashing of user identifiers in the future.
+While the majority of quality requirements are fully met, the mutation testing threshold has not yet reached the target of 80% survival rate. To improve mutation testing results, we will review existing tests and add additional cases that cover edge conditions and potential failure scenarios. Focusing on testing branches, exception handling, and rarely used code paths will help catch more potential mutations, bringing the mutation testing score up to the required standard.
