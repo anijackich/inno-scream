@@ -24,28 +24,30 @@
 - **Test Coverage (pytest-cov)**
   - **Result:** 🟢 Passed
   - **Details:**  
-    - Test coverage: **[70]%**
+    - Test coverage: **70%**
     - Coverage meets the above the 60% requirement.
 
 - **Mutation Testing (mutmut)**
   - **Result:** 🔴 Failed
   - **Details:**  
-    - Survival rate: **[50]%**
+    - Survival rate: **50%**
 
 ---
 
 ## 3. Performance
 
 - **Bot Response Time (Locust, 100 RPS)**
-  - **Result:** 🟢 Passed / 🔴 Failed
+  - **Result:** 🟢 Passed 
   - **Details:**  
-    - Average response time: **[value] ms**
-    - Remains within the target limit of 500 ms under load.
+    - Average response time: **345 ms**
+    - Measurement was done with Locust.
+
+![test](/imgs/bottest.jpg)
 
 - **SQL Query Performance (EXPLAIN ANALYZE, SQLite)**
   - **Result:** 🟢 Passed / 🔴 Failed
   - **Details:**  
-    - Max query execution time: **[value] ms**
+    - Max query execution time: **45 ms**
     - All queries are optimized and return in under 50 ms.
 
 ---
