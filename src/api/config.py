@@ -1,16 +1,23 @@
+"""API config."""
+
+
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 DOTENV_FILES = ('.env', './.envs/api/.env')
+"""Environment files."""
 
 dotenv_settings_config = SettingsConfigDict(
     extra='ignore',
     env_file=DOTENV_FILES,
     env_file_encoding='utf-8',
 )
+"""Config for .env."""
 
 
 class AppMeta(BaseSettings):
+    """Application metadata."""
+
     title: str = Field('InnoScream API')
     description: str = Field('Anonymous stress relief platform for students')
     version: str = Field('0.1.0')
@@ -20,6 +27,8 @@ class AppMeta(BaseSettings):
 
 
 class Database(BaseSettings):
+    """Database config object."""
+
     url: str = Field(...)
 
     model_config = dotenv_settings_config
@@ -27,6 +36,8 @@ class Database(BaseSettings):
 
 
 class Memes(BaseSettings):
+    """Memes config object."""
+
     captions_font: str = Field(...)
 
     model_config = dotenv_settings_config
@@ -34,6 +45,8 @@ class Memes(BaseSettings):
 
 
 class Settings(BaseSettings):
+    """Application settings."""
+
     host: str = Field('127.0.0.1')
     port: int = Field(8000)
     app_meta: AppMeta = AppMeta()
@@ -44,3 +57,4 @@ class Settings(BaseSettings):
 
 
 settings = Settings()
+"""Application settings."""
