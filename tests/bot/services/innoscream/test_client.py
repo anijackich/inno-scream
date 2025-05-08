@@ -62,7 +62,11 @@ async def test_create_scream(api, mock_client, sample_scream_data):
 @pytest.mark.asyncio
 async def test_create_scream_http_error(api, mock_client):
     mock_response = Response(400)
-    mock_response.raise_for_status = MagicMock(side_effect=HTTPStatusError("Bad request", request=None, response=mock_response))
+    mock_response.raise_for_status = MagicMock(
+        side_effect=HTTPStatusError(
+            'Bad request', request=None, response=mock_response
+        )
+    )
     mock_client.post.return_value = mock_response
 
     with pytest.raises(HTTPStatusError):
@@ -73,7 +77,9 @@ async def test_create_scream_http_error(api, mock_client):
 
 @pytest.mark.asyncio
 async def test_create_scream_request_error(api, mock_client):
-    mock_client.post.side_effect = RequestError("Connection error", request=None)
+    mock_client.post.side_effect = RequestError(
+        'Connection error', request=None
+    )
 
     with pytest.raises(RequestError):
         await api.create_scream(user_id=123, text='Test scream')
@@ -83,7 +89,9 @@ async def test_create_scream_request_error(api, mock_client):
 
 @pytest.mark.asyncio
 async def test_create_scream_timeout(api, mock_client):
-    mock_client.post.side_effect = TimeoutException("Request timed out", request=None)
+    mock_client.post.side_effect = TimeoutException(
+        'Request timed out', request=None
+    )
 
     with pytest.raises(TimeoutException):
         await api.create_scream(user_id=123, text='Test scream')
@@ -107,7 +115,11 @@ async def test_get_scream(api, mock_client, sample_scream_data):
 @pytest.mark.asyncio
 async def test_get_scream_not_found(api, mock_client):
     mock_response = Response(404)
-    mock_response.raise_for_status = MagicMock(side_effect=HTTPStatusError("Not found", request=None, response=mock_response))
+    mock_response.raise_for_status = MagicMock(
+        side_effect=HTTPStatusError(
+            'Not found', request=None, response=mock_response
+        )
+    )
     mock_client.get.return_value = mock_response
 
     with pytest.raises(HTTPStatusError):
@@ -130,7 +142,11 @@ async def test_delete_scream(api, mock_client):
 @pytest.mark.asyncio
 async def test_delete_scream_not_found(api, mock_client):
     mock_response = Response(404)
-    mock_response.raise_for_status = MagicMock(side_effect=HTTPStatusError("Not found", request=None, response=mock_response))
+    mock_response.raise_for_status = MagicMock(
+        side_effect=HTTPStatusError(
+            'Not found', request=None, response=mock_response
+        )
+    )
     mock_client.delete.return_value = mock_response
 
     with pytest.raises(HTTPStatusError):
@@ -158,11 +174,17 @@ async def test_react_on_scream(api, mock_client, sample_scream_data):
 @pytest.mark.asyncio
 async def test_react_on_scream_invalid_reaction(api, mock_client):
     mock_response = Response(400)
-    mock_response.raise_for_status = MagicMock(side_effect=HTTPStatusError("Bad request", request=None, response=mock_response))
+    mock_response.raise_for_status = MagicMock(
+        side_effect=HTTPStatusError(
+            'Bad request', request=None, response=mock_response
+        )
+    )
     mock_client.post.return_value = mock_response
 
     with pytest.raises(HTTPStatusError):
-        await api.react_on_scream(scream_id=1, user_id=123, reaction='invalid_emoji')
+        await api.react_on_scream(
+            scream_id=1, user_id=123, reaction='invalid_emoji'
+        )
 
     mock_client.post.assert_called_once()
 
@@ -184,7 +206,11 @@ async def test_get_stats(api, mock_client, sample_stats_data):
 @pytest.mark.asyncio
 async def test_get_stats_user_not_found(api, mock_client):
     mock_response = Response(404)
-    mock_response.raise_for_status = MagicMock(side_effect=HTTPStatusError("Not found", request=None, response=mock_response))
+    mock_response.raise_for_status = MagicMock(
+        side_effect=HTTPStatusError(
+            'Not found', request=None, response=mock_response
+        )
+    )
     mock_client.get.return_value = mock_response
 
     with pytest.raises(HTTPStatusError):
@@ -211,11 +237,15 @@ async def test_get_graph(api, mock_client):
 @pytest.mark.asyncio
 async def test_get_graph_invalid_period(api, mock_client):
     mock_response = Response(400)
-    mock_response.raise_for_status = MagicMock(side_effect=HTTPStatusError("Bad request", request=None, response=mock_response))
+    mock_response.raise_for_status = MagicMock(
+        side_effect=HTTPStatusError(
+            'Bad request', request=None, response=mock_response
+        )
+    )
     mock_client.get.return_value = mock_response
 
     with pytest.raises(HTTPStatusError):
-        await api.get_graph(user_id=123, period='invalid_period')  # type: ignore
+        await api.get_graph(user_id=123, period='invalid_period')
 
     mock_client.get.assert_called_once()
 
@@ -249,11 +279,15 @@ async def test_get_most_voted_scream_empty(api, mock_client):
 @pytest.mark.asyncio
 async def test_get_most_voted_scream_invalid_period(api, mock_client):
     mock_response = Response(400)
-    mock_response.raise_for_status = MagicMock(side_effect=HTTPStatusError("Bad request", request=None, response=mock_response))
+    mock_response.raise_for_status = MagicMock(
+        side_effect=HTTPStatusError(
+            'Bad request', request=None, response=mock_response
+        )
+    )
     mock_client.get.return_value = mock_response
 
     with pytest.raises(HTTPStatusError):
-        await api.get_most_voted_scream(period='invalid_period')  # type: ignore
+        await api.get_most_voted_scream(period='invalid_period')
 
     mock_client.get.assert_called_once()
 
@@ -276,7 +310,11 @@ async def test_generate_meme(api, mock_client):
 @pytest.mark.asyncio
 async def test_generate_meme_scream_not_found(api, mock_client):
     mock_response = Response(404)
-    mock_response.raise_for_status = MagicMock(side_effect=HTTPStatusError("Not found", request=None, response=mock_response))
+    mock_response.raise_for_status = MagicMock(
+        side_effect=HTTPStatusError(
+            'Not found', request=None, response=mock_response
+        )
+    )
     mock_client.post.return_value = mock_response
 
     with pytest.raises(HTTPStatusError):
@@ -289,7 +327,9 @@ async def test_generate_meme_scream_not_found(api, mock_client):
 
 @pytest.mark.asyncio
 async def test_generate_meme_timeout(api, mock_client):
-    mock_client.post.side_effect = TimeoutException("Request timed out", request=None)
+    mock_client.post.side_effect = TimeoutException(
+        'Request timed out', request=None
+    )
 
     with pytest.raises(TimeoutException):
         await api.generate_meme(scream_id=1)

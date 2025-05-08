@@ -43,9 +43,9 @@ def test_scream_model_with_string_datetime():
 def test_scream_model_with_different_datetime_formats():
     formats = [
         datetime.now(timezone.utc),
-        "2025-05-08T12:34:56.789012",
-        "2025-05-08T12:34:56Z",
-        "2025-05-08T12:34:56+00:00",
+        '2025-05-08T12:34:56.789012',
+        '2025-05-08T12:34:56Z',
+        '2025-05-08T12:34:56+00:00',
     ]
 
     for dt_format in formats:
@@ -89,7 +89,7 @@ def test_scream_model_with_integer_values():
 
 
 def test_scream_model_with_long_text():
-    long_text = "A" * 10000
+    long_text = 'A' * 10000
     data = {
         'scream_id': 1,
         'user_id': 123,
@@ -123,8 +123,16 @@ def test_stats_model_empty_reactions():
 
 def test_stats_model_with_many_reactions():
     reactions = {
-        '👍': 10, '👎': 5, '❤️': 20, '😂': 15, '😡': 3,
-        '🎉': 7, '🔥': 12, '👀': 8, '🤔': 4, '👏': 9
+        '👍': 10,
+        '👎': 5,
+        '❤️': 20,
+        '😂': 15,
+        '😡': 3,
+        '🎉': 7,
+        '🔥': 12,
+        '👀': 8,
+        '🤔': 4,
+        '👏': 9,
     }
     data = {'screams_count': 100, 'reactions_count': reactions}
 
@@ -139,7 +147,7 @@ def test_stats_model_with_many_reactions():
 def test_stats_model_with_extreme_values():
     data = {
         'screams_count': 2147483647,  # Max 32-bit integer
-        'reactions_count': {'👍': 2147483647, '👎': 2147483647}
+        'reactions_count': {'👍': 2147483647, '👎': 2147483647},
     }
 
     stats = Stats(**data)

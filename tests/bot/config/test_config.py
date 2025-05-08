@@ -26,21 +26,27 @@ def test_telegram_bot_config(mock_env_vars):
 
 
 def test_telegram_bot_config_empty_admins():
-    with patch.dict(os.environ, {
-        'TELEGRAM_BOT_TOKEN': 'test_token',
-        'ADMINS': '[]',
-        'REACTIONS': '["👍", "👎", "❤️"]',
-    }):
+    with patch.dict(
+        os.environ,
+        {
+            'TELEGRAM_BOT_TOKEN': 'test_token',
+            'ADMINS': '[]',
+            'REACTIONS': '["👍", "👎", "❤️"]',
+        },
+    ):
         bot_config = TelegramBot()
         assert bot_config.admins == []
 
 
 def test_telegram_bot_config_empty_reactions():
-    with patch.dict(os.environ, {
-        'TELEGRAM_BOT_TOKEN': 'test_token',
-        'ADMINS': '[1, 2, 3]',
-        'REACTIONS': '[]',
-    }):
+    with patch.dict(
+        os.environ,
+        {
+            'TELEGRAM_BOT_TOKEN': 'test_token',
+            'ADMINS': '[1, 2, 3]',
+            'REACTIONS': '[]',
+        },
+    ):
         bot_config = TelegramBot()
         assert bot_config.reactions == []
 
