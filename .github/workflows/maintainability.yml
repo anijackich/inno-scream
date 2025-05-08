@@ -15,3 +15,10 @@ jobs:
           python-version: "3.11"
       - name: flake8 Lint
         uses: py-actions/flake8@v2
+        
+  radon:
+    runs-on: ubuntu-latest
+    name: "radon"
+    steps:
+      - uses: actions/checkout@v3
+      - uses: davidslusser/actions_python_radon@v1.0.0
