@@ -1,3 +1,6 @@
+"""API models."""
+
+
 from datetime import datetime
 
 from sqlalchemy import Integer, String, ForeignKey, DateTime, func
@@ -7,6 +10,8 @@ from api.database import Base
 
 
 class Scream(Base):
+    """Scream model."""
+
     __tablename__ = 'screams'
     __table_args__ = {'extend_existing': True}
 
@@ -26,6 +31,8 @@ class Scream(Base):
 
 
 class Reaction(Base):
+    """Reaction model."""
+
     __tablename__ = 'reactions'
     __table_args__ = {'extend_existing': True}
 
