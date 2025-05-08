@@ -13,7 +13,9 @@ class Scream(Base):
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     user_id: Mapped[int] = mapped_column(Integer)
     text: Mapped[str] = mapped_column(String)
-    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now()
+    )
 
     reactions: Mapped[list['Reaction']] = relationship(
         'Reaction',
@@ -31,6 +33,12 @@ class Reaction(Base):
     user_id: Mapped[int] = mapped_column(Integer)
     scream_id: Mapped[int] = mapped_column(ForeignKey('screams.id'))
     reaction: Mapped[str] = mapped_column(String)
-    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        server_default=func.now(),
+    )
 
-    scream: Mapped['Scream'] = relationship('Scream', back_populates='reactions')
+    scream: Mapped['Scream'] = relationship(
+        'Scream',
+        back_populates='reactions',
+    )

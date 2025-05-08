@@ -37,14 +37,12 @@ MONTHS = {
 
 
 def get_period_limits(
-        period: Literal['day', 'week', 'month', 'year'],
-        today: datetime | None = None,
+    period: Literal['day', 'week', 'month', 'year'],
+    today: datetime | None = None,
 ) -> tuple[datetime, datetime]:
     if not today:
-        today = (
-            datetime
-            .now()
-            .replace(hour=0, minute=0, second=0, microsecond=0)
+        today = datetime.now().replace(
+            hour=0, minute=0, second=0, microsecond=0
         )
 
     match period:
@@ -60,17 +58,16 @@ def get_period_limits(
             end = start + timedelta(days=days) - timedelta(seconds=1)
         case 'year':
             start = today.replace(month=1, day=1)
-            end = today.replace(month=12, day=31) + timedelta(days=1) - timedelta(seconds=1)
+            end = today.replace(
+                month=12, day=31, hour=23, minute=59, second=59
+            )
         case _:
             raise ValueError('Invalid period')
 
     return start, end
 
 
-async def get_stats(
-        session: AsyncSession,
-        user_id: int
-) -> schemas.Stats:
+async def get_stats(session: AsyncSession, user_id: int) -> schemas.Stats:
     screams_count = await session.execute(
         select(func.count())
         .select_from(models.Scream)
@@ -86,22 +83,17 @@ async def get_stats(
 
     return schemas.Stats(
         screams_count=screams_count.scalar() or 0,
-        reactions_count={
-            r.reaction: r.count
-            for r in reactions.all()
-        }
+        reactions_count={r.reaction: r.count for r in reactions.all()},
     )
 
 
 async def get_graph(
-        session: AsyncSession,
-        user_id: int,
-        period: Literal['week', 'month', 'year'],
+    session: AsyncSession,
+    user_id: int,
+    period: Literal['week', 'month', 'year'],
 ) -> bytes:
-    today = (
-        datetime
-        .now(tz=timezone(timedelta(hours=+3)))
-        .replace(hour=0, minute=0, second=0, microsecond=0)
+    today = datetime.now(tz=timezone(timedelta(hours=+3))).replace(
+        hour=0, minute=0, second=0, microsecond=0
     )
 
     start, end = get_period_limits(period, today)
@@ -111,24 +103,33 @@ async def get_graph(
             extract_field = 'dow'
 
             labels = list(WEEKDAYS.values())
-            to_data = lambda d: [d.get(dow, 0) for dow in WEEKDAYS.keys()]
+            to_data = lambda d: [  # noqa: E731
+                d.get(dow, 0) for dow in WEEKDAYS.keys()
+            ]
 
-            title = f'Screams from {start.strftime('%b %d')} to {end.strftime('%b %d')}'
+            title = (
+                f'Screams from {start.strftime("%b %d")}'
+                f' to {end.strftime("%b %d")}'
+            )
         case 'month':
             extract_field = 'day'
 
             days = monthrange(today.year, today.month)[1]
             labels = list(map(str, range(1, days + 1)))
-            to_data = lambda d: [d.get(day, 0) for day in range(1, days + 1)]
+            to_data = lambda d: [  # noqa: E731
+                d.get(day, 0) for day in range(1, days + 1)
+            ]
 
-            title = f'Screams for {today.strftime('%b %Y')}'
+            title = f'Screams for {today.strftime("%b %Y")}'
         case 'year':
             extract_field = 'month'
 
             labels = list(MONTHS.values())
-            to_data = lambda d: [d.get(month, 0) for month in MONTHS.keys()]
+            to_data = lambda d: [  # noqa: E731
+                d.get(month, 0) for month in MONTHS.keys()
+            ]
 
-            title = f'Screams for {start.strftime('%Y')} year'
+            title = f'Screams for {start.strftime("%Y")} year'
         case _:
             raise ValueError('Invalid period')
 
@@ -154,35 +155,36 @@ async def get_graph(
                     data=to_data({d[0]: d[1] for d in screams_count.all()}),
                     backgroundColor='black',
                 )
-            ]
+            ],
         ),
         options={
-            'legend': {
-                'display': False
-            },
+            'legend': {'display': False},
             'title': {
                 'display': True,
                 'text': title,
-                'fontFamily': '\'Montserrat\', sans-serif',
+                'fontFamily': "'Montserrat', sans-serif",
                 'fontStyle': 'italic',
             },
             'scales': {
-                'yAxes': [{
-                    'gridLines': {
-                        'display': False,
-                    },
-                    'ticks': {
-                        'beginAtZero': True,
-                        'stepSize': 1,
-                        'fontFamily': '\'Montserrat\', sans-serif',
-
+                'yAxes': [
+                    {
+                        'gridLines': {
+                            'display': False,
+                        },
+                        'ticks': {
+                            'beginAtZero': True,
+                            'stepSize': 1,
+                            'fontFamily': "'Montserrat', sans-serif",
+                        },
                     }
-                }],
-                'xAxes': [{
-                    'ticks': {
-                        'fontFamily': '\'Montserrat\', sans-serif',
+                ],
+                'xAxes': [
+                    {
+                        'ticks': {
+                            'fontFamily': "'Montserrat', sans-serif",
+                        }
                     }
-                }]
+                ],
             },
             'plugins': {
                 'roundedBars': True,
@@ -194,25 +196,28 @@ async def get_graph(
 
 
 async def get_most_voted(
-        session: AsyncSession,
-        period: Literal['day', 'week', 'month', 'year'],
+    session: AsyncSession,
+    period: Literal['day', 'week', 'month', 'year'],
 ) -> Scream | None:
-    today = (
-        datetime
-        .now(tz=timezone(timedelta(hours=+3)))
-        .replace(hour=0, minute=0, second=0, microsecond=0)
+    today = datetime.now(tz=timezone(timedelta(hours=+3))).replace(
+        hour=0, minute=0, second=0, microsecond=0
     )
 
     start, end = get_period_limits(period, today)
 
-    result = (await session.execute(
-        select(models.Scream)
-        .join(models.Reaction, models.Scream.id == models.Reaction.scream_id)
-        .where(models.Scream.created_at >= start)
-        .where(models.Scream.created_at <= end)
-        .group_by(models.Scream.id)
-        .order_by(func.count(models.Reaction.id).desc())
-        .limit(1)
-    )).scalar()
+    result = (
+        await session.execute(
+            select(models.Scream)
+            .join(
+                models.Reaction,
+                models.Scream.id == models.Reaction.scream_id,
+            )
+            .where(models.Scream.created_at >= start)
+            .where(models.Scream.created_at <= end)
+            .group_by(models.Scream.id)
+            .order_by(func.count(models.Reaction.id).desc())
+            .limit(1)
+        )
+    ).scalar()
 
     return scream_orm2schema(result) if result else None

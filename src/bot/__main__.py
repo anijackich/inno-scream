@@ -13,7 +13,8 @@ from aiogram.types import (
     Message,
     CallbackQuery,
     InlineKeyboardButton,
-    InlineKeyboardMarkup, BufferedInputFile
+    InlineKeyboardMarkup,
+    BufferedInputFile,
 )
 
 from bot.config import settings
@@ -24,7 +25,7 @@ subscribers = set(settings.bot.admins)
 dp = Dispatcher()
 bot = Bot(
     token=settings.bot.token,
-    default=DefaultBotProperties(parse_mode=ParseMode.MARKDOWN)
+    default=DefaultBotProperties(parse_mode=ParseMode.MARKDOWN),
 )
 
 innoscream = InnoScreamAPI(base_url=settings.innoscream.base_url)
@@ -50,7 +51,10 @@ async def start(message: Message) -> None:
 @dp.message(Command('exit'))
 async def exit_bot(message: Message) -> None:
     subscribers.discard(message.chat.id)
-    await message.reply('👋 You\'ve unsubscribed from updates. Use /start to join again anytime.')
+    await message.reply(
+        "👋 You've unsubscribed from updates. "
+        'Use /start to join again anytime.'
+    )
 
 
 def build_reactions_keyboard(scream: Scream) -> InlineKeyboardMarkup:
@@ -63,8 +67,9 @@ def build_reactions_keyboard(scream: Scream) -> InlineKeyboardMarkup:
                 callback_data=ReactionsCallbackFactory(
                     scream_id=scream.scream_id,
                     reaction=reaction,
-                ).pack()
-            ) for reaction, count in scream.reactions.items()
+                ).pack(),
+            )
+            for reaction, count in scream.reactions.items()
         ],
         width=4,
     )
@@ -96,19 +101,23 @@ async def create_scream(message: Message) -> None:
     for sub in subscribers:
         await message.bot.send_message(
             chat_id=sub,
-            text=f'📢 *Student screams:*\n\n{scream.text}' + (
+            text=f'📢 *Student screams:*\n\n{scream.text}'
+            + (
                 f'\n\n`{scream.scream_id}`'
-                if sub in settings.bot.admins else ''
+                if sub in settings.bot.admins
+                else ''
             ),
-            reply_to_message_id=message.message_id if sub == message.from_user.id else None,
-            reply_markup=kb
+            reply_to_message_id=(
+                message.message_id if sub == message.from_user.id else None
+            ),
+            reply_markup=kb,
         )
 
 
 @dp.callback_query(ReactionsCallbackFactory.filter())
 async def create_reaction(
-        callback: CallbackQuery,
-        callback_data: ReactionsCallbackFactory
+    callback: CallbackQuery,
+    callback_data: ReactionsCallbackFactory,
 ) -> None:
     scream = await innoscream.react_on_scream(
         callback_data.scream_id,
@@ -117,7 +126,9 @@ async def create_reaction(
     )
     extend_reactions_with_defaults(scream)
 
-    await callback.message.edit_reply_markup(reply_markup=build_reactions_keyboard(scream))
+    await callback.message.edit_reply_markup(
+        reply_markup=build_reactions_keyboard(scream)
+    )
 
 
 @dp.message(Command('stats'))
@@ -128,18 +139,19 @@ async def get_stats(message: Message) -> None:
     await message.reply_photo(
         photo=BufferedInputFile(graph, 'graph.png'),
         caption=(
-                    '📊 Here\'s your scream statistics\n\n'
-                    '*Total number of posts*\n'
-                    f'{stats.screams_count}\n\n'
-                    '*Top reactions*\n'
-                ) + '\n'.join(
-            f'{r} {c}' for r, c in
-            sorted(
+            "📊 Here's your scream statistics\n\n"
+            '*Total number of posts*\n'
+            f'{stats.screams_count}\n\n'
+            '*Top reactions*\n'
+        )
+        + '\n'.join(
+            f'{r} {c}'
+            for r, c in sorted(
                 stats.reactions_count.items(),
                 key=lambda r: r[1],
                 reverse=True,
             )
-        )
+        ),
     )
 
 
@@ -158,7 +170,9 @@ async def delete(message: Message) -> None:
 async def send_daily_top_scream():
     while True:
         now = datetime.now()
-        nxt = now.replace(hour=0, minute=0, second=0, microsecond=0) + timedelta(days=1)
+        nxt = now.replace(
+            hour=0, minute=0, second=0, microsecond=0
+        ) + timedelta(days=1)
         await asyncio.sleep((nxt - now).total_seconds())
 
         scream = await innoscream.get_most_voted_scream('day')

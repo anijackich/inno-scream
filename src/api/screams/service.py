@@ -8,7 +8,7 @@ from api import models
 from .exceptions import ScreamNotFound
 
 
-def get_scream_reactions(scream: models.Scream) -> dict[str: int]:
+def get_scream_reactions(scream: models.Scream) -> dict[str:int]:
     reactions = defaultdict(int)
     for reaction in scream.reactions:
         reactions[reaction.reaction] += 1
@@ -27,9 +27,9 @@ def scream_orm2schema(scream: models.Scream) -> schemas.Scream:
 
 
 async def create_scream(
-        session: AsyncSession,
-        user_id: int,
-        text: str,
+    session: AsyncSession,
+    user_id: int,
+    text: str,
 ) -> schemas.Scream:
     scream = models.Scream(user_id=user_id, text=text)
     session.add(scream)
@@ -40,10 +40,7 @@ async def create_scream(
     return scream_orm2schema(scream)
 
 
-async def get_scream(
-        session: AsyncSession,
-        scream_id: int
-) -> schemas.Scream:
+async def get_scream(session: AsyncSession, scream_id: int) -> schemas.Scream:
     scream = await session.get(models.Scream, scream_id)
     if not scream:
         raise ScreamNotFound()
@@ -52,23 +49,29 @@ async def get_scream(
 
 
 async def get_screams(
-        session: AsyncSession,
-        page: int,
-        limit: int,
+    session: AsyncSession,
+    page: int,
+    limit: int,
 ) -> list[schemas.Scream]:
-    screams = (await session.execute(
-        select(models.Scream)
-        .order_by(models.Scream.created_at.desc())
-        .offset((page - 1) * limit)
-        .limit(limit)
-    )).scalars().all()
+    screams = (
+        (
+            await session.execute(
+                select(models.Scream)
+                .order_by(models.Scream.created_at.desc())
+                .offset((page - 1) * limit)
+                .limit(limit)
+            )
+        )
+        .scalars()
+        .all()
+    )
 
     return list(map(scream_orm2schema, screams))
 
 
 async def delete_scream(
-        session: AsyncSession,
-        scream_id: int,
+    session: AsyncSession,
+    scream_id: int,
 ) -> None:
     scream = await session.get(models.Scream, scream_id)
     if not scream:
@@ -79,10 +82,10 @@ async def delete_scream(
 
 
 async def react_on_scream(
-        session: AsyncSession,
-        scream_id: int,
-        user_id: int,
-        reaction: str,
+    session: AsyncSession,
+    scream_id: int,
+    user_id: int,
+    reaction: str,
 ) -> schemas.Scream:
     scream = await session.get(models.Scream, scream_id)
     if not scream:

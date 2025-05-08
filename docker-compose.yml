@@ -1,0 +1,16 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: docker/api.Dockerfile
+    env_file:
+      - ./.envs/api/.env
+    volumes:
+      - ./database.db:/app/database.db
+
+  bot:
+    build:
+      context: .
+      dockerfile: docker/bot.Dockerfile
+    env_file:
+      - ./.envs/bot/.env
