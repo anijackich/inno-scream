@@ -3,8 +3,30 @@ repos:
     rev: '2.1.1'
     hooks:
       - id: poetry-check
+        name: Poetry check
       - id: poetry-lock
+        name: Poetry lock
   - repo: https://github.com/pycqa/flake8
     rev: '7.2.0'
+    name: Flake8
     hooks:
       - id: flake8
+        name: Flake8 lint & format
+        args: ['src', 'tests']
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.11.8
+    hooks:
+      - id: ruff
+        name: Ruff lint
+        args: ['--select', 'B,C,E,F,W,B9', '--ignore', 'B008', 'src', 'tests']
+      - id: ruff-format
+        name: Ruff format
+        args: ['--diff', '--line-length', '79', '--config', "format.quote-style='single'", 'src', 'tests']
+  - repo: local
+    hooks:
+      - id: pytest
+        name: Tests
+        entry: pytest
+        language: system
+        pass_filenames: false
+        always_run: true
