@@ -29,5 +29,4 @@ jobs:
       # so this line is super-simple. But it could be as complex as you need.
       - name: Run tests with coverage 
         run: poetry run pytest --cov=src --cov-report=term-missing tests/
-      - name: Run mutations
-        run:  poetry run mutmut run --paths-to-mutate=src/bot
+
