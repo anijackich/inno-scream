@@ -1,6 +1,5 @@
 """API models."""
 
-
 from datetime import datetime
 
 from sqlalchemy import Integer, String, ForeignKey, DateTime, func

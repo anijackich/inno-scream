@@ -1,6 +1,5 @@
 """Supermeme API wrapper module."""
 
-
 from .supermeme import (
     MemeTemplate,
     MemeTemplateProps,

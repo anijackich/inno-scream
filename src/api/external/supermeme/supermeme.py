@@ -1,6 +1,5 @@
 """Supermeme API wrapper module."""
 
-
 import json
 from typing import List
 

@@ -1,4 +1,5 @@
 """A simple abstraction over API for easier use."""
+
 from typing import Literal
 from httpx import AsyncClient
 

@@ -7,6 +7,7 @@ It includes settings for:
 - Telegram bot authentication and behavior
 - InnoScream backend service endpoint
 """
+
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 

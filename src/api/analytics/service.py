@@ -1,6 +1,5 @@
 """Utility functions for analytics."""
 
-
 from datetime import datetime, timedelta, timezone
 from calendar import monthrange
 from typing import Literal

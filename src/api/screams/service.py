@@ -1,6 +1,5 @@
 """Utility functions for scream manipulation."""
 
-
 from collections import defaultdict
 
 from sqlalchemy import select
