@@ -15,6 +15,6 @@ async def test_get_async_session():
 async def test_create_tables():
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
-    
+
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.drop_all)

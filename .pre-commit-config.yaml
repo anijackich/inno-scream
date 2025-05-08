@@ -8,3 +8,12 @@ repos:
     rev: '7.2.0'
     hooks:
       - id: flake8
+        args: ['src', 'tests']
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.11.8
+    hooks:
+      - id: ruff
+        args: ['--select', 'B,C,E,F,W,B9', '--ignore', 'B008', 'src', 'tests']
+      - id: ruff-format
+        args: ['--diff', '--line-length', '79', '--config', "format.quote-style='single'", 'src', 'tests']
+

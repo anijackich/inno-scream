@@ -101,7 +101,6 @@ class Supermeme:
         next_data = json.loads(next_data.text)
 
         try:
-            
             meme_template_props = MemeTemplateProps.model_validate(
                 next_data['props']['pageProps']
             )

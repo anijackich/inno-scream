@@ -95,9 +95,13 @@ class QuickChart:
             httpx.TimeoutException
             https.NetworkError
         """
-        response = await self.client.post("/chart", json={
-            "chart": chart.model_dump_json(),
-            "backgroundColor": "white"
-        })
+        response = await self.client.post(
+            '/chart',
+            json={
+                'chart': chart.model_dump_json(),
+                'backgroundColor': 'white',
+            },
+        )
         await response.raise_for_status()
+
         return response.content
