@@ -2,8 +2,8 @@ name: Lint
 
 on:
   push:
-    paths:
-      - '*.py'
+#    paths:
+#      - '*.py'
 
 jobs:
   flake8:
