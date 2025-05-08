@@ -25,9 +25,7 @@ def upgrade() -> None:
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('user_id', sa.Integer(), nullable=False),
     sa.Column('text', sa.String(), nullable=False),
-    sa.Column('created_at', sa.DateTime(),
-                server_default=sa.text('(CURRENT_TIMESTAMP)'),
-                nullable=False),
+    sa.Column('created_at', sa.DateTime(), server_default=sa.text('(CURRENT_TIMESTAMP)'), nullable=False),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_table('reactions',
@@ -35,9 +33,7 @@ def upgrade() -> None:
     sa.Column('user_id', sa.Integer(), nullable=False),
     sa.Column('scream_id', sa.Integer(), nullable=False),
     sa.Column('reaction', sa.String(), nullable=False),
-    sa.Column('created_at', sa.DateTime(),
-                server_default=sa.text('(CURRENT_TIMESTAMP)'),
-                nullable=False),
+    sa.Column('created_at', sa.DateTime(), server_default=sa.text('(CURRENT_TIMESTAMP)'), nullable=False),
     sa.ForeignKeyConstraint(['scream_id'], ['screams.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
