@@ -1,3 +1,5 @@
+"""API entry point."""
+
 import uvicorn
 from fastapi import FastAPI
 
@@ -11,6 +13,7 @@ from api.analytics import router as analytics_router
 
 
 async def startup() -> None:
+    """Perform start-up actions."""
     await create_database()
 
 

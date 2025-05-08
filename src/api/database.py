@@ -1,3 +1,5 @@
+"""API database."""
+
 from typing import AsyncGenerator
 
 from sqlalchemy import NullPool
@@ -22,10 +24,12 @@ AsyncSessionLocal = async_sessionmaker(
 
 
 async def create_database():
+    """Create database."""
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
 
 
 async def get_async_session() -> AsyncGenerator[AsyncSession, None]:
+    """Get asynchrounous session."""
     async with AsyncSessionLocal() as session:
         yield session

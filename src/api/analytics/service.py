@@ -1,3 +1,5 @@
+"""Utility functions for analytics."""
+
 from datetime import datetime, timedelta, timezone
 from calendar import monthrange
 from typing import Literal
@@ -10,6 +12,7 @@ from api import models
 from api.screams import Scream, scream_orm2schema
 from api.external.quickchart import QuickChart, Chart, ChartData, Dataset
 
+
 WEEKDAYS = {
     1: 'Mon',
     2: 'Tue',
@@ -19,6 +22,7 @@ WEEKDAYS = {
     6: 'Sat',
     0: 'Sun',
 }
+"""Weekdays enumeration."""
 
 MONTHS = {
     1: 'Jan',
@@ -34,12 +38,23 @@ MONTHS = {
     11: 'Nov',
     12: 'Dec',
 }
+"""Months enumeration."""
 
 
 def get_period_limits(
     period: Literal['day', 'week', 'month', 'year'],
     today: datetime | None = None,
 ) -> tuple[datetime, datetime]:
+    """
+    Get bounds of time period.
+
+    Args:
+        period: Time period
+        today (datetime | None): Today datetime
+
+    Returns:
+        Bounds of time period
+    """
     if not today:
         today = datetime.now().replace(
             hour=0, minute=0, second=0, microsecond=0
@@ -68,6 +83,16 @@ def get_period_limits(
 
 
 async def get_stats(session: AsyncSession, user_id: int) -> schemas.Stats:
+    """
+    Get stats for user.
+
+    Args:
+        session (AsyncSession): Session
+        user_id (int): User ID
+
+    Returns:
+        Stats schema
+    """
     screams_count = await session.execute(
         select(func.count())
         .select_from(models.Scream)
@@ -92,6 +117,17 @@ async def get_graph(
     user_id: int,
     period: Literal['week', 'month', 'year'],
 ) -> bytes:
+    """
+    Get statistics graph picture for time period.
+
+    Args:
+        session (AsyncSession): Session
+        user_id (int): User ID
+        period: Time period
+
+    Returns:
+        Graph picture as bytes
+    """
     today = datetime.now(tz=timezone(timedelta(hours=+3))).replace(
         hour=0, minute=0, second=0, microsecond=0
     )
@@ -199,6 +235,16 @@ async def get_most_voted(
     session: AsyncSession,
     period: Literal['day', 'week', 'month', 'year'],
 ) -> Scream | None:
+    """
+    Get most voted scream in time period.
+
+    Args:
+        session (AsyncSession): Session
+        perdio: Time period
+
+    Returns:
+        Scream schema
+    """
     today = datetime.now(tz=timezone(timedelta(hours=+3))).replace(
         hour=0, minute=0, second=0, microsecond=0
     )

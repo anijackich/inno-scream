@@ -1,3 +1,5 @@
+"""QuickChart API wrapper module."""
+
 from typing import List, Any
 from pydantic import BaseModel
 from httpx import AsyncClient
@@ -33,7 +35,7 @@ class ChartData(BaseModel):
 
 class Chart(BaseModel):
     """
-    Chart
+    Chart.
 
     Attributes:
         type: Chart type ("line", "bar", ...).
@@ -49,7 +51,7 @@ class Chart(BaseModel):
 
 class QuickChart:
     """
-    Wrapper class for QuickChart API
+    Wrapper class for QuickChart API.
 
     Example:
         ```python
@@ -81,7 +83,7 @@ class QuickChart:
 
     async def chart(self, chart: Chart) -> bytes:
         """
-        Creates a chart image.
+        Create a chart image.
 
         Args:
             chart (Chart): Chart configuration object.

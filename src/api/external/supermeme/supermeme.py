@@ -1,3 +1,5 @@
+"""Supermeme API wrapper module."""
+
 import json
 from typing import List
 
@@ -7,9 +9,7 @@ from pydantic import BaseModel, Field, ValidationError
 
 
 class Caption(BaseModel):
-    """
-    Rectangle representing a place for caption in meme.
-    """
+    """Rectangle representing a place for caption in meme."""
 
     x: int
     y: int
@@ -23,6 +23,8 @@ class Caption(BaseModel):
 
 
 class MemeTemplate(BaseModel):
+    """Meme template."""
+
     name: str
     image_path: str
     description: str
@@ -30,6 +32,8 @@ class MemeTemplate(BaseModel):
 
 
 class MemeTemplateProps(BaseModel):
+    """Meme template properties."""
+
     page_title: str = Field(alias='pageTitle')
     image_src: str = Field(alias='imageSrc')
     image_name: str = Field(alias='imageName')
@@ -46,9 +50,7 @@ class _PageProps(BaseModel):
 
 
 class Supermeme:
-    """
-    Wrapper class for Supermeme API.
-    """
+    """Wrapper class for Supermeme API."""
 
     def __init__(
         self,
@@ -68,6 +70,7 @@ class Supermeme:
         )
 
     async def search_meme_templates(self, query: str) -> List[MemeTemplate]:
+        """Search meme templates with query."""
         response = await self.client.get(
             '/api/search',
             params={'searchQuery': query},
@@ -89,6 +92,7 @@ class Supermeme:
         self,
         meme: MemeTemplate,
     ) -> MemeTemplateProps:
+        """Get MemeTemplateProps for MemeTemplate instance."""
         response = await self.client.get(f'/meme/{meme.name}')
         await response.raise_for_status()
 

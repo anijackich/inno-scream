@@ -1,3 +1,5 @@
+"""`/screams` route module."""
+
 from .routes import router
 from .schemas import Scream
 from .exceptions import ScreamNotFound
