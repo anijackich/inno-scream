@@ -13,9 +13,15 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: "3.11"
-      - name: flake8 Lint
+      - name: flake8 src
         uses: py-actions/flake8@v2
-        
+        with:
+          path: "src"
+
+      - name: flake8 tests
+        uses: py-actions/flake8@v2
+        with:
+          path: "tests"
   radon:
     runs-on: ubuntu-latest
     name: "radon"
