@@ -1,3 +1,5 @@
+"""`analytics` routes."""
+
 from typing import Literal
 
 from fastapi.responses import Response
@@ -19,6 +21,7 @@ async def get_stats(
     user_id: int = Path(..., title='User ID'),
     session: AsyncSession = Depends(get_async_session),
 ):
+    """Get statistics for user."""
     return await service.get_stats(session, user_id)
 
 
@@ -31,6 +34,7 @@ async def get_graph(
     period: Literal['week', 'month', 'year'] = Query(..., title='Period'),
     session: AsyncSession = Depends(get_async_session),
 ):
+    """Get statistics graph for user and time period."""
     return Response(
         content=await service.get_graph(session, user_id, period),
         media_type='image/png',
@@ -44,4 +48,5 @@ async def get_most_voted(
     ),
     session: AsyncSession = Depends(get_async_session),
 ):
+    """Get most voted scream in time period."""
     return await service.get_most_voted(session, period)
