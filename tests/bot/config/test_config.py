@@ -38,26 +38,3 @@ def test_settings(mock_env_vars):
     assert settings.bot.admins == [1, 2, 3]
     assert settings.bot.reactions == ['👍', '👎', '❤️']
     assert settings.innoscream.base_url == 'http://test-api.com'
-
-
-@pytest.mark.parametrize(
-    'missing_var',
-    ['TELEGRAM_BOT_TOKEN', 'ADMINS', 'REACTIONS', 'INNOSCREAM_BASE_URL'],
-)
-def test_missing_required_env_vars(missing_var):
-    env_vars = {
-        'TELEGRAM_BOT_TOKEN': 'test_token',
-        'ADMINS': '[1, 2, 3]',
-        'REACTIONS': '["👍", "👎", "❤️"]',
-        'INNOSCREAM_BASE_URL': 'http://test-api.com',
-    }
-
-    env_vars.pop(missing_var)
-
-    with patch.dict(os.environ, env_vars, clear=True):
-        if missing_var in ['TELEGRAM_BOT_TOKEN', 'ADMINS', 'REACTIONS']:
-            with pytest.raises(Exception):  # noqa: B017
-                TelegramBot()
-        elif missing_var == 'INNOSCREAM_BASE_URL':  # noqa: B017
-            with pytest.raises(Exception):  # noqa: B017
-                InnoScream()

@@ -4,7 +4,7 @@ services:
       context: .
       dockerfile: docker/api.Dockerfile
     env_file:
-      - ./.envs/api/.env
+      - .envs/api/.env
     volumes:
       - ./database.db:/app/database.db
 
@@ -13,4 +13,4 @@ services:
       context: .
       dockerfile: docker/bot.Dockerfile
     env_file:
-      - ./.envs/bot/.env
+      - .envs/bot/.env
