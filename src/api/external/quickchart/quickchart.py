@@ -104,6 +104,6 @@ class QuickChart:
                 'backgroundColor': 'white',
             },
         )
-        await response.raise_for_status()
+        response.raise_for_status()
 
         return response.content
