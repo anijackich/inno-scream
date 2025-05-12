@@ -22,7 +22,8 @@ def mock_message():
     message.chat.id = 123
     message.text = ''
     message.reply = AsyncMock()
-    message.reply_photo = AsyncMock()
+    message.answer = AsyncMock()
+    message.answer_photo = AsyncMock()
     message.bot = MagicMock()
     message.bot.send_message = AsyncMock()
     message.bot.send_photo = AsyncMock()
@@ -79,10 +80,10 @@ async def test_start_command(mock_message):
     await start(mock_message)
 
     assert mock_message.from_user.id in subscribers
-    mock_message.reply.assert_called_once()
+    mock_message.answer.assert_called_once()
     assert (
         'Welcome to the Anonymous Scream Bot'
-        in mock_message.reply.call_args[0][0]
+        in mock_message.answer.call_args[0][0]
     )
 
 
@@ -95,8 +96,8 @@ async def test_exit_command(mock_message):
     await stop_updates(mock_message)
 
     assert mock_message.chat.id not in subscribers
-    mock_message.reply.assert_called_once()
-    assert 'unsubscribed' in mock_message.reply.call_args[0][0]
+    mock_message.answer.assert_called_once()
+    assert 'unsubscribed' in mock_message.answer.call_args[0][0]
 
 
 @pytest.mark.asyncio
@@ -190,7 +191,7 @@ async def test_get_stats(mock_message, mock_innoscream_api, sample_stats):
 
     mock_innoscream_api.get_stats.assert_called_once_with(123)
     mock_innoscream_api.get_graph.assert_called_once_with(123, 'week')
-    mock_message.reply_photo.assert_called_once()
+    mock_message.answer_photo.assert_called_once()
 
 
 @pytest.mark.asyncio

@@ -105,11 +105,11 @@ async def start(message: Message) -> None:
     """
 
     subscribers.add(message.from_user.id)
-    await message.reply(
+    await message.answer(
         '👋 Welcome to the Anonymous Scream Bot!\n\n'
         'Send anonymous posts with /scream [text]\n'
         'Use /stats to see your personal statistics.\n'
-        'Use /exit to stop receiving updates.'
+        'Use /stop to stop receiving updates.'
     )
 
 
@@ -121,7 +121,7 @@ async def stop_updates(message: Message) -> None:
     """
 
     subscribers.discard(message.from_user.id)
-    await message.reply(
+    await message.answer(
         "👋 You've unsubscribed from updates. "
         'Use /start to join again anytime.'
     )
@@ -243,7 +243,7 @@ async def get_stats(message: Message) -> None:
     stats = await innoscream.get_stats(message.from_user.id)
     graph = await innoscream.get_graph(message.from_user.id, 'week')
 
-    await message.reply_photo(
+    await message.answer_photo(
         photo=BufferedInputFile(graph, 'graph.png'),
         caption=(
             "📊 Here's your scream statistics\n\n"
