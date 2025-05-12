@@ -282,6 +282,11 @@ async def delete(message: Message) -> None:
     await message.reply('Scream deleted')
 
 
+@dp.message(Command('online'), F.from_user.id.in_(settings.bot.admins))
+async def get_active_users(message: Message) -> None:
+    await message.reply(str(len(subscribers)))
+
+
 async def send_daily_top_scream():
     """
     Send the top voted scream of the day to all subscribers.
