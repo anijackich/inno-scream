@@ -75,7 +75,7 @@ class Supermeme:
             '/api/search',
             params={'searchQuery': query},
         )
-        await response.raise_for_status()
+        response.raise_for_status()
 
         try:
             response_data = await response.json()
@@ -94,7 +94,7 @@ class Supermeme:
     ) -> MemeTemplateProps:
         """Get MemeTemplateProps for MemeTemplate instance."""
         response = await self.client.get(f'/meme/{meme.name}')
-        await response.raise_for_status()
+        response.raise_for_status()
 
         soup = BeautifulSoup(response.content, 'html.parser')
         next_data = soup.find(id='__NEXT_DATA__')
