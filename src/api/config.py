@@ -53,6 +53,7 @@ class Settings(BaseSettings):
     memes: Memes = Memes()
 
     model_config = dotenv_settings_config
+    model_config['env_prefix'] = ''
 
 
 settings = Settings()
