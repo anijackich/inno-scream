@@ -88,11 +88,11 @@ async def test_start_command(mock_message):
 
 @pytest.mark.asyncio
 async def test_exit_command(mock_message):
-    from src.bot.__main__ import exit_bot, subscribers
+    from src.bot.__main__ import stop_updates, subscribers
 
     subscribers.add(mock_message.chat.id)
 
-    await exit_bot(mock_message)
+    await stop_updates(mock_message)
 
     assert mock_message.chat.id not in subscribers
     mock_message.reply.assert_called_once()

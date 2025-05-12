@@ -24,6 +24,7 @@ from aiogram.types import (
     InlineKeyboardButton,
     InlineKeyboardMarkup,
     BufferedInputFile,
+    BotCommand,
 )
 
 from bot.config import settings
@@ -34,10 +35,40 @@ subscribers = set(settings.bot.admins)
 dp = Dispatcher()
 bot = Bot(
     token=settings.bot.token,
-    default=DefaultBotProperties(parse_mode=ParseMode.MARKDOWN),
+    default=DefaultBotProperties(parse_mode=ParseMode.HTML),
 )
 
 innoscream = InnoScreamAPI(base_url=settings.innoscream.base_url)
+
+
+async def set_bot_commands():
+    await bot.set_my_commands(
+        commands=[
+            BotCommand(
+                command='start',
+                description='Restart bot and subscribe to new screams',
+            ),
+            BotCommand(
+                command='stop',
+                description='Stop receiving new screams',
+            ),
+            BotCommand(
+                command='scream',
+                description='Post scream',
+            ),
+            BotCommand(
+                command='stats',
+                description='Show my statistics',
+            ),
+            BotCommand(
+                command='help',
+                description='Show help message',
+            ),
+        ]
+    )
+
+
+dp.startup.register(set_bot_commands)
 
 
 class ReactionsCallbackFactory(CallbackData, prefix='reactions'):
@@ -50,6 +81,22 @@ class ReactionsCallbackFactory(CallbackData, prefix='reactions'):
     reaction: str
 
 
+@dp.message(Command('help'))
+async def show_help(message: Message) -> None:
+    """
+    Handle /help command.
+    Show help message to user.
+    """
+
+    subscribers.add(message.from_user.id)
+    await message.reply(
+        '/start — restart bot and subscribe to new screams\n'
+        '/scream [text] — post new scream\n'
+        '/stats — see your personal statistics\n'
+        '/stop — stop receiving new screams'
+    )
+
+
 @dp.message(CommandStart())
 async def start(message: Message) -> None:
     """
@@ -59,22 +106,21 @@ async def start(message: Message) -> None:
 
     subscribers.add(message.from_user.id)
     await message.reply(
-        '👋 Welcome to the Anonymous Scream Bot!\n'
-        'Send anonymous messages with /scream [text]\n'
-        'Vote on screams using reaction buttons.\n'
-        'Use /stats to see your post reactions.\n'
+        '👋 Welcome to the Anonymous Scream Bot!\n\n'
+        'Send anonymous posts with /scream [text]\n'
+        'Use /stats to see your personal statistics.\n'
         'Use /exit to stop receiving updates.'
     )
 
 
-@dp.message(Command('exit'))
-async def exit_bot(message: Message) -> None:
+@dp.message(Command('stop'))
+async def stop_updates(message: Message) -> None:
     """
-    Handle /exit command.
+    Handle /stop command.
     Removes the user from the subscriber list.
     """
 
-    subscribers.discard(message.chat.id)
+    subscribers.discard(message.from_user.id)
     await message.reply(
         "👋 You've unsubscribed from updates. "
         'Use /start to join again anytime.'
@@ -151,7 +197,7 @@ async def create_scream(message: Message) -> None:
             chat_id=sub,
             text=f'📢 *Student screams:*\n\n{scream.text}'
             + (
-                f'\n\n`{scream.scream_id}`'
+                f'\n\n<code>{scream.scream_id}</code>'
                 if sub in settings.bot.admins
                 else ''
             ),
